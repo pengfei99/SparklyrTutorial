@@ -8,27 +8,27 @@ date: '2023-11-21'
 
 ```{r}
 library(sparklyr)
+library(dplyr)
 ```
 
 ## Step2: Setup env var
 
 ```{r}
-Sys.setenv(SPARK_HOME="/opt/spark/spark-3.4.1")
+Sys.setenv(SPARK_HOME="/home/pengfei/opt/spark-3.3.0")
 ```
 ### step3: Load the spark default conf
 
 Load the spark default conf, we can also overwrite the default conf
 
-In below example, we overright the yarn queue name
 
 ```{r}
 conf <- spark_config()
 
 # Memory
-conf["sparklyr.shell.driver-memory"] <- "64g"
+conf["sparklyr.shell.driver-memory"] <- "4g"
 
 # Cores
-conf["sparklyr.connect.cores.local"] <- 8
+conf["sparklyr.connect.cores.local"] <- 2
 ```
 
 ## Step4: Create a spark context
@@ -41,13 +41,21 @@ options(sparklyr.log.console = TRUE)
 ```
 
 ```{r}
-sc <- spark_connect(master = "local", version = "3.4.1", config = conf)
+sc <- spark_connect(master = "local", config = conf)
 ```
 
 ## Step5: Read a csv as data frame
 
 ```{r}
-spark_read_csv(sc, name = "test", path = "hdfs://10.50.5.67:9000/user/rstudio/flights/airports.csv")
+source_df <- spark_read_csv(sc, path = "file:///home/pengfei/data_set/recette/clinical01.csv")
+```
+```{r}
+show(source_df)
+```
+```{r}
+user_sex_count <- source_df %>% group_by(sex) %>% count()
+
+head(user_sex_count)
 ```
 
 ## Step6: Disconnect the spark context

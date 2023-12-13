@@ -1,0 +1,39 @@
+---
+title: "SparkR_create_session.Rmd"
+author: "pengfei liu"
+date: "2023-12-12"
+output: html_document
+---
+
+## Create a spark session
+
+```{r setup, include=FALSE}
+if (nchar(Sys.getenv("SPARK_HOME")) < 1) {
+  Sys.setenv(SPARK_HOME = "/home/spark")
+}
+library(SparkR, lib.loc = c(file.path(Sys.getenv("SPARK_HOME"), "R", "lib")))
+sparkR.session(master = "local[*]", sparkConfig = list(spark.driver.memory = "2g"))
+```
+
+## Read a csv file as dataframe
+
+
+```{r}
+# read a csv file from s3
+df <- read.df("file:///home/pengfei/data_set/recette/clinical01.csv", "csv", header = "true", inferSchema = "true")
+
+# show the first 5 rows
+head(df)
+```
+
+## Transform dataframe
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+# group the data by column activitePrincipaleEtablissement and count the aggregated rows
+use_sex_count <- summarize(groupBy(df, df$sex), count = n(df$id))
+head(arrange(use_sex_count, desc(use_sex_count$count)))
+```
+
+
