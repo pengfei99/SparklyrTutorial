@@ -53,11 +53,14 @@ source_df <- spark_read_csv(sc, path = "file:///home/pengfei/data_set/recette/cl
 show(source_df)
 ```
 ```{r}
-user_sex_count <- source_df %>% group_by(sex) %>% count()
+user_sex_count <- source_df %>% group_by(sex) %>% count() 
 
 head(user_sex_count)
 ```
+```{r}
+user_sex_count_bad <- source_df %>% group_by(sex) %>% count() %>% collect()
 
+```
 ## Step6: Disconnect the spark context
 
 ```{r}

@@ -175,3 +175,7 @@ So there is no need to do the conversion.
 The case you need to do the conversion
 - Another function need to use the dataframe as input, but the function only accept the R dataframe as input.
 - Data Visualization
+
+### Avoid useless shuffles
+
+
