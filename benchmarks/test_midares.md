@@ -141,7 +141,7 @@ Below code is the content of  `recuperation_contrats_mmo.R`
 
 | source_name                 | execution_time | data shuffle size |
 |-----------------------------|----------------|-------------------|
-| recuperation_contrats_mmo.R | 4.800279 mins  | 4.4GB             |
+| recuperation_contrats_mmo.R | 4.800279 min   | 4.4GB             |
 | sparlyr_pliu_test.R         | 1.981864 min   | 123.7MB           |
 
 
@@ -149,7 +149,29 @@ Below code is the content of  `recuperation_contrats_mmo.R`
 ## Use spark UI to benchmark a spark job
 
 Use spark UI to view the job duration, memory usage and GC time.
-http://localhost:40
+http://localhost:4040
 
-Unable to view DAG of the spark job. Because sparklyr does not support that.
+Unable to view DAG of the spark job for now. We will correct this ASAP
 
+## Suggestions
+
+### Don't use collect or df_collect unless you have no choice
+
+The `collect()` and `df_collect()` function collect data from all worker node and send them to the driver node 
+(a full shuffle), then convert `the Spark DataFrame into an R data frame or list`.
+
+**Memory usage**
+
+As they fetch the entire content of the Spark DataFrame and brings it into memory as an R data frame or list,
+the memory consumption will be doubled. For large datasets, it can be problematic, because it may exceed the available
+memory.
+
+**Calculation time**
+The full shuffle and dataframe conversion consume lots of time too.
+
+A spark dataframe is similar to R dataframe. All the spark transformation and action can be applied on the dataframe.
+So there is no need to do the conversion. 
+
+The case you need to do the conversion
+- Another function need to use the dataframe as input, but the function only accept the R dataframe as input.
+- Data Visualization
